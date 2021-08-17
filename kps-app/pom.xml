@@ -54,6 +54,7 @@
 
 	<build>
 		<plugins>
+		<!--
 		 
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
@@ -79,6 +80,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 
