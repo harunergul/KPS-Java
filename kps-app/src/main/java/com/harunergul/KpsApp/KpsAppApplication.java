@@ -32,7 +32,7 @@ public class KpsAppApplication {
 		BilesikKutukSorgulaKimlikNoServis bilesikKutukSorgulamaServis = KPSClientFactory.Instance.getBilesikKutukSorgulaKimlikNoServis();
 		
 		
-		sorgula(bilesikKutukSorgulamaServis, 13, 5, 1992, 14041461416L);
+		sorgula(bilesikKutukSorgulamaServis, 5, 13, 1992, 14041461416L);
 		
 	}
 
