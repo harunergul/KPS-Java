@@ -21,7 +21,8 @@ public class KPSClientFactory {
 		
 		if(bilesikKutukSorgulaService==null) {
 			synchronized (syncObject) {
-				bilesikKutukSorgulaService = new BilesikKutukSorgulaKimlikNoServis_Service();;
+				bilesikKutukSorgulaService = new BilesikKutukSorgulaKimlikNoServis_Service();
+				bilesikKutukSorgulaService.setHandlerResolver(KpsStsHandlerResolver.Instance);
 			}
 		}
 		return bilesikKutukSorgulaService.getCustomBindingBilesikKutukSorgulaKimlikNoServis(new AddressingFeature());

@@ -3,12 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<!-- 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.5.3</version>
-		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
+	 -->
 	<groupId>com.harunergul</groupId>
 	<artifactId>kps-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -19,13 +20,14 @@
 		<cxf.version>3.4.4</cxf.version>
 	</properties>
 	<dependencies>
-		<!-- cxf -->
+		<!-- cxf: used to generate KPS service classes -->
+		<!-- 
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-spring-boot-starter-jaxws</artifactId>
 			<version>${cxf.version}</version>
 		</dependency>
-
+ 		-->
 		<!-- for javax.jws package. JAX-WS, plus SAAJ and Web Services Metadata -->
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
@@ -33,7 +35,7 @@
 			<version>2.3.2</version>
 			<type>pom</type>
 		</dependency>
-
+		<!-- 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -42,7 +44,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-
+ -->
 		<dependency>
 			<groupId>com.datasel</groupId>
 			<artifactId>kps-sts-handler</artifactId>
