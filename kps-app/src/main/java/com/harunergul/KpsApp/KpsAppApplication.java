@@ -17,6 +17,7 @@ public class KpsAppApplication {
 		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
 		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
 		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
+		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
 		
 		NviConfigurationItem item = new NviConfigurationItem();
 		String stsEndPointURI = "https://kimlikdogrulama.nvi.gov.tr/Services/Issuer.svc/IWSTrust13";
