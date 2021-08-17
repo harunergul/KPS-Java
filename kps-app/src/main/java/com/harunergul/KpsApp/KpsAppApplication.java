@@ -3,7 +3,6 @@ package com.harunergul.KpsApp;
 import javax.xml.bind.JAXBElement;
 
 import tr.gov.nvi.kps._2021._04._01.ArrayOfBilesikKutukSorgulaKimlikNoSorguKriteri;
-import tr.gov.nvi.kps._2021._04._01.BilesikKutukBilgileriSonucu;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoServis;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoSorguKriteri;
 import tr.gov.nvi.kps.sts.NviConfiguration;
@@ -23,18 +22,10 @@ public class KpsAppApplication {
 		NviConfiguration.Instance.clear();
 		NviConfiguration.Instance.addConfiguration(kpsEndPointURI, item);
 		
-		System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
-		System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
-		System.setProperty("com.sun.xml.ws.util.pipe.StandaloneTubeAssembler.dump", "true");
-		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
-		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
-		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
-		
-		
 		BilesikKutukSorgulaKimlikNoServis bilesikKutukSorgulamaServis = KPSClientFactory.Instance.getBilesikKutukSorgulaKimlikNoServis();
 		
 		
-		sorgula(bilesikKutukSorgulamaServis, 5, 13, 1992, 14041461416L);
+		sorgula(bilesikKutukSorgulamaServis, 13, 5, 1992, 14041461416L);
 		
 	}
 
@@ -54,8 +45,7 @@ public class KpsAppApplication {
 		kriter.setDogumYil(_year);
 		kriter.setKimlikNo(_identificationNo);
 		value.getBilesikKutukSorgulaKimlikNoSorguKriteri().add(kriter);
-		BilesikKutukBilgileriSonucu result = bilesikKutukSorgulamaServis.sorgula(value);
-		System.out.println(result);
+		bilesikKutukSorgulamaServis.sorgula(value);
 	}
 
 }
