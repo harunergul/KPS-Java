@@ -1,5 +1,6 @@
 package com.harunergul.KpsApp;
 
+import java.io.PrintStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -43,12 +44,12 @@ import tr.gov.nvi.kps.sts.client.token.NviNamespaces;
 import tr.gov.nvi.kps.sts.client.token.NviSecurityToken;
 import tr.gov.nvi.kps.sts.client.utilities.Helper;
 
-
 public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 
 	static {
 		org.apache.xml.security.Init.init();
 	}
+	private static PrintStream out = System.out;
 
 	@Override
 	public boolean handleMessage(SOAPMessageContext messageContext) {
@@ -182,58 +183,90 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 
 		buildSimpleSignature(securityElement, timestampElement, token);
 	}
-	
+
 	private void buildSimpleSignature(SOAPElement securityElement, SOAPElement timestampElement, NviSecurityToken token)
-            throws SOAPException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, MarshalException, XMLSignatureException, InvalidCanonicalizerException, CanonicalizationException, InvalidKeyException {
-    	SOAPElement signatureElement = securityElement.addChildElement(NviConstants.TAG_SIGNATURE, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	SOAPElement signedInfoElement = signatureElement.addChildElement(NviConstants.TAG_SIGNEDINFO, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	
-    	SOAPElement canonElement = signedInfoElement.addChildElement(NviConstants.TAG_CANONALIZATION_METHOD, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	canonElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_C14N);
-    	
-    	SOAPElement sigMethodElement = signedInfoElement.addChildElement(NviConstants.TAG_SIGNATURE_METHOD, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	sigMethodElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_HMAC_SHA1);
-    	
-    	SOAPElement referenceElement = signedInfoElement.addChildElement(NviConstants.TAG_REFERENCE, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	referenceElement.setAttribute(NviConstants.ATT_URI, "#_0");
-    	SOAPElement transformsElement = referenceElement.addChildElement(NviConstants.TAG_TRANSFORMS, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	SOAPElement transformElement = transformsElement.addChildElement(NviConstants.TAG_TRANSFORM, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	transformElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_C14N);
-    	SOAPElement digestMethodElement = referenceElement.addChildElement(NviConstants.TAG_DIGEST_METHOD, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	digestMethodElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_SHA1);
-    	SOAPElement digestValueElement = referenceElement.addChildElement(NviConstants.TAG_DIGEST_VALUE, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	digestValueElement.addTextNode(Helper.encodeBytes(computeDigest(canonalize(timestampElement))));
-    	
-    	SOAPElement signatureValueElement = signatureElement.addChildElement(NviConstants.TAG_SIGNATURE_VALUE, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	signatureValueElement.addTextNode(Helper.encodeBytes(computeHmacSha1(canonalize(signedInfoElement), token.getProofTokenSecret())));
-    	
-    	SOAPElement keyInfoElement = signatureElement.addChildElement(NviConstants.TAG_KEY_INFO, NviNamespaces.NS_XML_SIGNATURE_PREFIX);
-    	
-    	Node tokenReferenceNode = token.getSecurityTokenReference().cloneNode(true);
-        Node importedTokenReferenceNode = securityElement.getOwnerDocument().importNode(tokenReferenceNode, true);
-        keyInfoElement.appendChild(importedTokenReferenceNode);
-    }
-	
+			throws SOAPException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, MarshalException,
+			XMLSignatureException, InvalidCanonicalizerException, CanonicalizationException, InvalidKeyException {
+		SOAPElement signatureElement = securityElement.addChildElement(NviConstants.TAG_SIGNATURE,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		SOAPElement signedInfoElement = signatureElement.addChildElement(NviConstants.TAG_SIGNEDINFO,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+
+		SOAPElement canonElement = signedInfoElement.addChildElement(NviConstants.TAG_CANONALIZATION_METHOD,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		canonElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_C14N);
+
+		SOAPElement sigMethodElement = signedInfoElement.addChildElement(NviConstants.TAG_SIGNATURE_METHOD,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		sigMethodElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_HMAC_SHA1);
+
+		SOAPElement referenceElement = signedInfoElement.addChildElement(NviConstants.TAG_REFERENCE,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		referenceElement.setAttribute(NviConstants.ATT_URI, "#_0");
+		SOAPElement transformsElement = referenceElement.addChildElement(NviConstants.TAG_TRANSFORMS,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		SOAPElement transformElement = transformsElement.addChildElement(NviConstants.TAG_TRANSFORM,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		transformElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_C14N);
+		SOAPElement digestMethodElement = referenceElement.addChildElement(NviConstants.TAG_DIGEST_METHOD,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		digestMethodElement.setAttribute(NviConstants.ATT_ALGORITHM, NviConstants.CST_ALGORITHM_SHA1);
+		SOAPElement digestValueElement = referenceElement.addChildElement(NviConstants.TAG_DIGEST_VALUE,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		digestValueElement.addTextNode(Helper.encodeBytes(computeDigest(canonalize(timestampElement))));
+
+		SOAPElement signatureValueElement = signatureElement.addChildElement(NviConstants.TAG_SIGNATURE_VALUE,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+		signatureValueElement.addTextNode(
+				Helper.encodeBytes(computeHmacSha1(canonalize(signedInfoElement), token.getProofTokenSecret())));
+
+		SOAPElement keyInfoElement = signatureElement.addChildElement(NviConstants.TAG_KEY_INFO,
+				NviNamespaces.NS_XML_SIGNATURE_PREFIX);
+
+		Node tokenReferenceNode = token.getSecurityTokenReference().cloneNode(true);
+		Node importedTokenReferenceNode = securityElement.getOwnerDocument().importNode(tokenReferenceNode, true);
+		keyInfoElement.appendChild(importedTokenReferenceNode);
+	}
+
 	private byte[] canonalize(Element e) throws InvalidCanonicalizerException, CanonicalizationException {
-    	Canonicalizer cInstance = Canonicalizer.getInstance(CanonicalizationMethod.EXCLUSIVE);
-		
+		Canonicalizer cInstance = Canonicalizer.getInstance(CanonicalizationMethod.EXCLUSIVE);
+
 		byte[] result = cInstance.canonicalizeSubtree(e);
-		
+
 		return result;
-    }
+	}
+
+	private byte[] computeDigest(byte[] input) throws NoSuchAlgorithmException {
+		return MessageDigest.getInstance("SHA1").digest(input);
+	}
+
+	private byte[] computeHmacSha1(byte[] input, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {
+		SecretKey keySpec = new SecretKeySpec(key, "HmacSHA1");
+
+		Mac m = Mac.getInstance("HmacSHA1");
+		m.init(keySpec);
+		m.update(input);
+
+		return m.doFinal();
+	}
 	
-	 private byte[] computeDigest(byte[] input) throws NoSuchAlgorithmException {
-	    	return MessageDigest.getInstance("SHA1").digest(input);
-	    }
-	    
-	    private byte[] computeHmacSha1(byte[] input, byte[] key) throws NoSuchAlgorithmException, InvalidKeyException {
-	    	SecretKey keySpec = new SecretKeySpec(key, "HmacSHA1");
-	    	
-	    	Mac m = Mac.getInstance("HmacSHA1");
-	    	m.init(keySpec);
-	    	m.update(input);
-	    	
-	    	return m.doFinal();
-	    }
+	private void logToSystemOut(SOAPMessageContext smc) {
+        Boolean outboundProperty = (Boolean)
+            smc.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+
+        if (outboundProperty.booleanValue()) {
+            out.println("\nOutbound message:");
+        } else {
+            out.println("\nInbound message:");
+        }
+
+        SOAPMessage message = smc.getMessage();
+        try {
+            message.writeTo(out);
+            out.println("");   // just to add a newline
+        } catch (Exception e) {
+            out.println("Exception in handler: " + e);
+        }
+    }
 
 }
