@@ -71,7 +71,8 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 
 					applySecurityToken(msg, token);
 				}
-
+				//logToSystemOut(messageContext);
+				
 				return true;
 			} catch (NoSuchAlgorithmException ex) {
 				Logger.getLogger(NviStsHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,6 +108,8 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 				throw new ProtocolException("Canonicalization failed.", ex);
 			}
 		}
+		
+		//logToSystemOut(messageContext);
 
 		return true;
 	}
@@ -262,7 +265,7 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 
         SOAPMessage message = smc.getMessage();
         try {
-            message.writeTo(out);
+           // message.writeTo(out);
             out.println("");   // just to add a newline
         } catch (Exception e) {
             out.println("Exception in handler: " + e);

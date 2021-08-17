@@ -112,7 +112,7 @@ public class NviSecurityTokenClient {
 
         Calendar created = Calendar.getInstance();
         Calendar expires = (Calendar) created.clone();
-        expires.add(Calendar.MINUTE, 5);
+        expires.add(Calendar.MINUTE, 20);
 
         createdElement.addTextNode(Helper.formatDate(created.getTime()));
         expiresElement.addTextNode(Helper.formatDate(expires.getTime()));
