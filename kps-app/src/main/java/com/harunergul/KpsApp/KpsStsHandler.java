@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,8 +126,16 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 
 	@Override
 	public Set<QName> getHeaders() {
-		// TODO Auto-generated method stub
-		return null;
+		final QName securityHeader = new QName(
+	            "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd",
+	            "Security",
+	            "wsse");
+
+	        final Set<QName> headers = new HashSet<>();
+	        headers.add(securityHeader);
+
+	        // notify the runtime that this is handled
+	        return headers;
 	}
 
 	private void applySecurityToken(SOAPMessage message, NviSecurityToken token)
@@ -144,6 +153,11 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 	}
 
 	private void buildNamespaces(SOAPEnvelope envelope) throws SOAPException {
+//		envelope.addNamespaceDeclaration("s", "http://www.w3.org/2003/05/soap-envelope" );
+//		envelope.addNamespaceDeclaration("u","http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
+//		envelope.addNamespaceDeclaration("dsig","http://www.w3.org/2000/09/xmldsig#");
+//		
+		
 		envelope.addNamespaceDeclaration(NviNamespaces.NS_ADDRESSING_PREFIX, NviNamespaces.NS_ADDRESSING);
 		envelope.addNamespaceDeclaration(NviNamespaces.NS_ENVELOPE_PREFIX, NviNamespaces.NS_ENVELOPE);
 		envelope.addNamespaceDeclaration(NviNamespaces.NS_POLICY_PREFIX, NviNamespaces.NS_POLICY);
@@ -156,14 +170,11 @@ public class KpsStsHandler implements SOAPHandler<SOAPMessageContext> {
 	private void buildMessageHeader(SOAPHeader header, NviSecurityToken token)
 			throws SOAPException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, MarshalException,
 			XMLSignatureException, InvalidKeyException, InvalidCanonicalizerException, CanonicalizationException {
-		SOAPElement securityElement = header.addChildElement(NviConstants.TAG_SECURITY,
-				NviNamespaces.NS_SECURITY_PREFIX);
-		securityElement.setAttributeNS(NviNamespaces.NS_ENVELOPE,
-				NviNamespaces.NS_ENVELOPE_PREFIX + ":" + NviConstants.ATT_MUSTUNDERSTAND, "1");
+		SOAPElement securityElement = header.addChildElement(NviConstants.TAG_SECURITY, NviNamespaces.NS_SECURITY_PREFIX);
+		securityElement.setAttributeNS(NviNamespaces.NS_ENVELOPE, NviNamespaces.NS_ENVELOPE_PREFIX + ":" + NviConstants.ATT_MUSTUNDERSTAND, "1");
 
 		// Build Time Stamp...
-		SOAPElement timestampElement = securityElement.addChildElement(NviConstants.TAG_TIMESTAMP,
-				NviNamespaces.NS_SECURITY_UTIL_PREFIX);
+		SOAPElement timestampElement = securityElement.addChildElement(NviConstants.TAG_TIMESTAMP, NviNamespaces.NS_SECURITY_UTIL_PREFIX);
 		timestampElement.addAttribute(NviConstants.ATT_TIMESTAMP_ID, "_0");
 		SOAPElement createdElement = timestampElement.addChildElement(NviConstants.TAG_TIMESTAMP_CREATED,
 				NviNamespaces.NS_SECURITY_UTIL_PREFIX);

@@ -1,58 +1,217 @@
 package com.harunergul.KpsApp;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import javax.xml.bind.JAXBElement;
 
+import com.harunergul.KpsApp.dto.KpsTcKisiKayitYeriBilgisiDTO;
+
+import tr.gov.nvi.kps._2011._01._01.Parametre;
+import tr.gov.nvi.kps._2011._01._01.TCKisiKayitYeriBilgisi;
+import tr.gov.nvi.kps._2011._01._01.TCKisiTemelBilgisi;
+import tr.gov.nvi.kps._2011._01._01.TarihBilgisi;
+import tr.gov.nvi.kps._2011._01._01.YabanciKisiDurumBilgisi;
+import tr.gov.nvi.kps._2011._01._01.YabanciKisiTemelBilgisi;
+import tr.gov.nvi.kps._2021._04._01.ArrayOfBilesikKutukBilgileri;
 import tr.gov.nvi.kps._2021._04._01.ArrayOfBilesikKutukSorgulaKimlikNoSorguKriteri;
+import tr.gov.nvi.kps._2021._04._01.BilesikKutukBilgileri;
+import tr.gov.nvi.kps._2021._04._01.BilesikKutukBilgileriSonucu;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoServis;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoSorguKriteri;
+import tr.gov.nvi.kps._2021._04._01.MaviKartKisiKutukleri;
+import tr.gov.nvi.kps._2021._04._01.TCCuzdanBilgisi;
+import tr.gov.nvi.kps._2021._04._01.TCKK;
+import tr.gov.nvi.kps._2021._04._01.TCKisiBilgisi;
+import tr.gov.nvi.kps._2021._04._01.TCVatandasiKisiKutukleri;
+import tr.gov.nvi.kps._2021._04._01.YabanciKisiBilgisi;
+import tr.gov.nvi.kps._2021._04._01.YabanciKisiKutukleri;
 import tr.gov.nvi.kps.sts.NviConfiguration;
 import tr.gov.nvi.kps.sts.NviConfigurationItem;
 
 public class KpsAppApplication {
 
 	public static void main(String[] args) {
-		
+
 		System.setProperty("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", "true");
 		System.setProperty("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump", "true");
 		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dump", "true");
 		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dump", "true");
 		System.setProperty("com.sun.xml.internal.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
 		System.setProperty("com.sun.xml.ws.transport.http.HttpAdapter.dumpTreshold", "999999");
-		
+
 		NviConfigurationItem item = new NviConfigurationItem();
 		String stsEndPointURI = "https://kimlikdogrulama.nvi.gov.tr/Services/Issuer.svc/IWSTrust13";
 		String kpsEndPointURI = "https://kpsv2.nvi.gov.tr/Services/RoutingService.svc";
+//		kpsEndPointURI = "http://kpsv2test.nvi.gov.tr/Services/RoutingService.svc";
 		item.setTokenServiceEndpoint(stsEndPointURI);
-		item.setUsername("22526655878");
-		item.setPassword("Alper1992".toCharArray());
 
-		NviConfiguration.Instance.clear();
-		NviConfiguration.Instance.addConfiguration(kpsEndPointURI, item);
-		
-		BilesikKutukSorgulaKimlikNoServis bilesikKutukSorgulamaServis = KPSClientFactory.Instance.getBilesikKutukSorgulaKimlikNoServis();
-		
-		
-		sorgula(bilesikKutukSorgulamaServis, 5, 13, 1992, 14041461416L);
-		
+
+		// yabanci
+		/*
+		 * person.day = 14; person.month = 10; person.year = 1988;
+		 * person.identificationNo = 99301346702L;
+		 */
+
+		// person = TestPersonProvider.getTCUyrukluKapali(0);
+
+		KpsKimlikBilgisiDTO kimlik = new KpsKimlikBilgisiDTO();
+
+		BilesikKutukBilgileriSonucu sonuc = birlesikKutukSorgula(person);
+		Parametre hataBilgisi = sonuc.getHataBilgisi().getValue();
+		if (hataBilgisi != null) {
+			Integer hataKodu = hataBilgisi.getKod().getValue();
+			String aciklama = hataBilgisi.getAciklama().getValue();
+			System.out.println("Hata Kodu     : " + hataKodu);
+			System.out.println("Hata Aciklama : " + aciklama);
+		} else {
+			ArrayOfBilesikKutukBilgileri arrayOfkutukBilgileri = sonuc.getSorguSonucu().getValue();
+			List<BilesikKutukBilgileri> bilesikKutukBilgileri = arrayOfkutukBilgileri.getBilesikKutukBilgileri();
+			for (BilesikKutukBilgileri bilesikKutukBilgileri2 : bilesikKutukBilgileri) {
+				hataBilgisi = bilesikKutukBilgileri2.getHataBilgisi().getValue();
+				if (hataBilgisi != null) {
+					Integer kod = hataBilgisi.getKod().getValue();
+					String aciklama = hataBilgisi.getAciklama().getValue();
+					System.out.println("Hata Kodu     : " + kod);
+					System.out.println("Hata Aciklama : " + aciklama);
+				}
+
+				TCVatandasiKisiKutukleri tcVatandasiKisiKutukleri = bilesikKutukBilgileri2.getTCVatandasiKisiKutukleri()
+						.getValue();
+
+				TCKK tckkBilgisi = tcVatandasiKisiKutukleri.getTCKKBilgisi().getValue();
+				if (tckkBilgisi.getAd().getValue() != null) {
+
+					TCCuzdanBilgisi ncBilgisi = tcVatandasiKisiKutukleri.getNufusCuzdaniBilgisi().getValue();
+
+					if (ncBilgisi != null) {
+						kimlik.setCuzdanKayitNo(ncBilgisi.getCuzdanKayitNo().getValue());
+						kimlik.setDogumYeri(ncBilgisi.getDogumYer().getValue());
+						kimlik.setCuzdanNo(ncBilgisi.getNo().getValue());
+						kimlik.setCuzdanSeriNo(ncBilgisi.getSeri().getValue());
+						kimlik.setVerildigiIlce(getParameter(ncBilgisi.getVerildigiIlce().getValue()));
+						kimlik.setCuzdanVerilmeNeden(getParameter(ncBilgisi.getCuzdanVerilmeNeden().getValue()));
+					}
+					
+					
+					
+					
+					kimlik.setKimlikTipi(KimlikTipi.TC_UYRUKLU);
+					kimlik.setTcKimlikNo(tckkBilgisi.getTCKimlikNo().getValue());
+					kimlik.setAd(tckkBilgisi.getAd().getValue());
+					kimlik.setAnneAd(tckkBilgisi.getAnneAd().getValue());
+					kimlik.setBabaAd(tckkBilgisi.getBabaAd().getValue());
+					kimlik.setCinsiyet(getParameter(tckkBilgisi.getCinsiyet().getValue()));
+					kimlik.setDogumTarihi(getDate(tckkBilgisi.getDogumTarih().getValue()));
+					kimlik.setKanGurubu(getParameter(tckkBilgisi.getKanGrubu().getValue()));
+					kimlik.setSeriNo(tckkBilgisi.getSeriNo().getValue());
+					kimlik.setSonGecerlilikTarih(getDate(tckkBilgisi.getSonGecerlilikTarih().getValue()));
+					kimlik.setSoyad(tckkBilgisi.getSoyad().getValue());
+					kimlik.setSurucuBelgeYuklendiMi(tckkBilgisi.getSurucuBelgeYuklendiMi().getValue());
+					kimlik.setSurucuBelgeYuklenmeTarih(getDate(tckkBilgisi.getSurucuBelgeYuklenmeTarih().getValue()));
+					kimlik.setVerenMakam(tckkBilgisi.getVerenMakam().getValue());
+
+					fillTemelBilgisi(kimlik, tcVatandasiKisiKutukleri.getKisiBilgisi().getValue());
+				}
+
+				MaviKartKisiKutukleri maviKartliKisiKutukleri = bilesikKutukBilgileri2.getMaviKartliKisiKutukleri()
+						.getValue();
+				YabanciKisiKutukleri yabanciKisiKutukleri = bilesikKutukBilgileri2.getYabanciKisiKutukleri().getValue();
+				YabanciKisiBilgisi yabanciKisiBilgisi = yabanciKisiKutukleri.getKisiBilgisi().getValue();
+				YabanciKisiTemelBilgisi yabanciKisiTemelBilgisi = yabanciKisiBilgisi.getTemelBilgisi().getValue();
+				if (yabanciKisiTemelBilgisi != null && yabanciKisiTemelBilgisi.getAd().getValue() != null) {
+					kimlik.setKimlikTipi(KimlikTipi.YABANCI_UYRUKLU);
+					kimlik.setTcKimlikNo(yabanciKisiBilgisi.getKimlikNo().getValue());
+					kimlik.setAd(yabanciKisiTemelBilgisi.getAd().getValue());
+					kimlik.setSoyad(yabanciKisiTemelBilgisi.getSoyad().getValue());
+					kimlik.setAnneAd(yabanciKisiTemelBilgisi.getAnneAd().getValue());
+					kimlik.setBabaAd(yabanciKisiTemelBilgisi.getBabaAd().getValue());
+					kimlik.setCinsiyet(getParameter(yabanciKisiTemelBilgisi.getCinsiyet().getValue()));
+					kimlik.setDogumTarihi(getDate(yabanciKisiBilgisi.getDogumTarih().getValue()));
+					kimlik.setUyruk(getParameter(yabanciKisiBilgisi.getUyruk().getValue()));
+
+					YabanciKisiDurumBilgisi durumBilgisi = yabanciKisiBilgisi.getDurumBilgisi().getValue();
+					kimlik.setMedeniHal(getParameter(durumBilgisi.getMedeniHal().getValue()));
+
+				}
+			}
+		}
+
 	}
 
-	private static void sorgula(BilesikKutukSorgulaKimlikNoServis bilesikKutukSorgulamaServis, int month, int day, int year, Long identificationNo ) {
-		tr.gov.nvi.kps._2021._04._01.ObjectFactory factory =new tr.gov.nvi.kps._2021._04._01.ObjectFactory();
+	private static void fillTemelBilgisi(KpsKimlikBilgisiDTO kimlik, TCKisiBilgisi kisiBilgisi) {
+
+		TCKisiTemelBilgisi temelBilgisi = kisiBilgisi.getTemelBilgisi().getValue();
+		if (temelBilgisi != null) {
+			kimlik.setAd(temelBilgisi.getAd().getValue());
+			kimlik.setAnneAd(temelBilgisi.getAnneAd().getValue());
+			kimlik.setBabaAd(temelBilgisi.getBabaAd().getValue());
+			kimlik.setSoyad(temelBilgisi.getSoyad().getValue());
+			kimlik.setCinsiyet(getParameter(temelBilgisi.getCinsiyet().getValue()));
+			kimlik.setDogumTarihi(getDate(temelBilgisi.getDogumTarih().getValue()));
+			kimlik.setDogumYeri(temelBilgisi.getDogumYer().getValue());
+		}
 		
+		TCKisiKayitYeriBilgisi kayitYeriBilgisi = kisiBilgisi.getKayitYeriBilgisi().getValue();
+		if(kayitYeriBilgisi!=null) {
+			KpsTcKisiKayitYeriBilgisiDTO kybDTO = new KpsTcKisiKayitYeriBilgisiDTO();
+			kybDTO.setAileSiraNo(kayitYeriBilgisi.getAileSiraNo().getValue());
+			kybDTO.setBireySiraNo(kayitYeriBilgisi.getBireySiraNo().getValue());
+			kybDTO.setCilt(getParameter(kayitYeriBilgisi.getCilt().getValue()));
+			kybDTO.setIl(getParameter(kayitYeriBilgisi.getIl().getValue()));
+			kybDTO.setIlce(getParameter(kayitYeriBilgisi.getIlce().getValue()));
+			
+			kimlik.setKayitYeriBilgisi(kybDTO);
+		}
+
+	}
+
+	private static Date getDate(TarihBilgisi tarihBilgisi) {
+		Calendar cal = Calendar.getInstance();
+		if (tarihBilgisi != null) {
+			if (tarihBilgisi.getAy().getValue() != null) {
+				cal.set(Calendar.MONTH, tarihBilgisi.getAy().getValue() - 1);
+			}
+			if (tarihBilgisi.getGun().getValue() != null) {
+				cal.set(Calendar.DAY_OF_MONTH, tarihBilgisi.getGun().getValue());
+			}
+			if (tarihBilgisi.getYil().getValue() != null) {
+				cal.set(Calendar.YEAR, tarihBilgisi.getYil().getValue());
+			}
+
+		}
+		return cal.getTime();
+	}
+
+	private static Parameter getParameter(Parametre parameter) {
+		Parameter par = new Parameter();
+		if (parameter != null) {
+			par.setKod(parameter.getKod().getValue());
+			par.setValue(parameter.getAciklama().getValue());
+		}
+		return par;
+	}
+
+	private static BilesikKutukBilgileriSonucu birlesikKutukSorgula(KpsPersonDTO personDTO) {
+		BilesikKutukSorgulaKimlikNoServis bilesikKutukSorgulamaServis = KPSClientFactory.Instance
+				.getBilesikKutukSorgulaKimlikNoServis();
+		tr.gov.nvi.kps._2021._04._01.ObjectFactory factory = new tr.gov.nvi.kps._2021._04._01.ObjectFactory();
+
 		ArrayOfBilesikKutukSorgulaKimlikNoSorguKriteri value;
-		JAXBElement<Integer> _month = factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumAy(month);
-		JAXBElement<Integer> _day = factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumGun(day);
-		JAXBElement<Integer> _year =  factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumYil(year);
-		JAXBElement<Long> _identificationNo  = factory.createBilesikKutukBilgileriKimlikNo(identificationNo);
-		
-		value = new  ArrayOfBilesikKutukSorgulaKimlikNoSorguKriteri();
+		JAXBElement<Integer> month = factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumAy(personDTO.month);
+		JAXBElement<Integer> day = factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumGun(personDTO.day);
+		JAXBElement<Integer> year = factory.createBilesikKutukSorgulaKimlikNoSorguKriteriDogumYil(personDTO.year);
+		JAXBElement<Long> identificationNo = factory.createBilesikKutukBilgileriKimlikNo(personDTO.identificationNo);
+
+		value = new ArrayOfBilesikKutukSorgulaKimlikNoSorguKriteri();
 		BilesikKutukSorgulaKimlikNoSorguKriteri kriter = new BilesikKutukSorgulaKimlikNoSorguKriteri();
-		kriter.setDogumAy(_month);
-		kriter.setDogumGun(_day);
-		kriter.setDogumYil(_year);
-		kriter.setKimlikNo(_identificationNo);
+		kriter.setDogumAy(month);
+		kriter.setDogumGun(day);
+		kriter.setDogumYil(year);
+		kriter.setKimlikNo(identificationNo);
 		value.getBilesikKutukSorgulaKimlikNoSorguKriteri().add(kriter);
-		bilesikKutukSorgulamaServis.sorgula(value);
+		return bilesikKutukSorgulamaServis.sorgula(value);
 	}
 
 }
