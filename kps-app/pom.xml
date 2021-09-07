@@ -16,7 +16,7 @@
 	<name>kps-app</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>1.7</java.version>
 		<cxf.version>3.4.4</cxf.version>
 	</properties>
 	<dependencies>
@@ -54,6 +54,14 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>	
 		<!--
 		 
 			<plugin>
