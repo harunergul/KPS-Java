@@ -6,9 +6,12 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import com.harunergul.KpsApp.dto.KpsTCKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTcKisiKayitYeriBilgisiDTO;
+import com.harunergul.KpsApp.dto.KpsYabanciKisiDurumBilgisiDTO;
 
 import tr.gov.nvi.kps._2011._01._01.Parametre;
+import tr.gov.nvi.kps._2011._01._01.TCKisiDurumBilgisi;
 import tr.gov.nvi.kps._2011._01._01.TCKisiKayitYeriBilgisi;
 import tr.gov.nvi.kps._2011._01._01.TCKisiTemelBilgisi;
 import tr.gov.nvi.kps._2011._01._01.TarihBilgisi;
@@ -47,14 +50,6 @@ public class KpsAppApplication {
 //		kpsEndPointURI = "http://kpsv2test.nvi.gov.tr/Services/RoutingService.svc";
 		item.setTokenServiceEndpoint(stsEndPointURI);
 
-
-		// yabanci
-		/*
-		 * person.day = 14; person.month = 10; person.year = 1988;
-		 * person.identificationNo = 99301346702L;
-		 */
-
-		// person = TestPersonProvider.getTCUyrukluKapali(0);
 
 		KpsKimlikBilgisiDTO kimlik = new KpsKimlikBilgisiDTO();
 
@@ -130,9 +125,15 @@ public class KpsAppApplication {
 					kimlik.setCinsiyet(getParameter(yabanciKisiTemelBilgisi.getCinsiyet().getValue()));
 					kimlik.setDogumTarihi(getDate(yabanciKisiBilgisi.getDogumTarih().getValue()));
 					kimlik.setUyruk(getParameter(yabanciKisiBilgisi.getUyruk().getValue()));
+					kimlik.setDogumYerKod(yabanciKisiBilgisi.getDogumYerKod().getValue());
 
-					YabanciKisiDurumBilgisi durumBilgisi = yabanciKisiBilgisi.getDurumBilgisi().getValue();
-					kimlik.setMedeniHal(getParameter(durumBilgisi.getMedeniHal().getValue()));
+					YabanciKisiDurumBilgisi dto = yabanciKisiBilgisi.getDurumBilgisi().getValue();
+ 					KpsYabanciKisiDurumBilgisiDTO durumBilgisiDTO = new KpsYabanciKisiDurumBilgisiDTO();
+					durumBilgisiDTO.setDurum(getParameter(dto.getDurum().getValue()));
+					durumBilgisiDTO.setMedeniHal(getParameter(dto.getMedeniHal().getValue()));
+					
+					kimlik.setYabanciKisiDurumBilgisiDTO(durumBilgisiDTO);
+					
 
 				}
 			}
@@ -162,9 +163,18 @@ public class KpsAppApplication {
 			kybDTO.setIl(getParameter(kayitYeriBilgisi.getIl().getValue()));
 			kybDTO.setIlce(getParameter(kayitYeriBilgisi.getIlce().getValue()));
 			
-			kimlik.setKayitYeriBilgisi(kybDTO);
+			kimlik.setKayitYeriBilgisiDTO(kybDTO);
 		}
-
+		
+		TCKisiDurumBilgisi durumBilgisi = kisiBilgisi.getDurumBilgisi().getValue();
+		if(durumBilgisi!=null) {
+			KpsTCKisiDurumBilgisiDTO dto = new KpsTCKisiDurumBilgisiDTO();
+			dto.setDin(getParameter(durumBilgisi.getDin().getValue()));
+			dto.setDurum(getParameter(durumBilgisi.getDurum().getValue()));
+			dto.setMedeniHal(getParameter(durumBilgisi.getMedeniHal().getValue()));
+			dto.setOlumTarihi(getDate(durumBilgisi.getOlumTarih().getValue()));
+			kimlik.setDurumBilgisiDTO(dto);
+		}
 	}
 
 	private static Date getDate(TarihBilgisi tarihBilgisi) {

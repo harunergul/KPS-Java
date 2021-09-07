@@ -2,7 +2,9 @@ package com.harunergul.KpsApp;
 
 import java.util.Date;
 
+import com.harunergul.KpsApp.dto.KpsTCKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTcKisiKayitYeriBilgisiDTO;
+import com.harunergul.KpsApp.dto.KpsYabanciKisiDurumBilgisiDTO;
 
 public class KpsKimlikBilgisiDTO {
 
@@ -28,7 +30,12 @@ public class KpsKimlikBilgisiDTO {
 	private Integer cuzdanNo;
 	private String cuzdanSeriNo;
 	private Parameter verildigiIlce;
-	private KpsTcKisiKayitYeriBilgisiDTO kayitYeriBilgisi;
+	
+	private Integer dogumYerKod; //Hangi ulke oldugunu belirtir.
+	private KpsTcKisiKayitYeriBilgisiDTO kayitYeriBilgisiDTO;
+	private KpsTCKisiDurumBilgisiDTO durumBilgisiDTO; //tc vatandasi icin
+	private KpsYabanciKisiDurumBilgisiDTO yabanciKisiDurumBilgisiDTO;
+	
 
 	private Parameter uyruk;
 
@@ -208,12 +215,39 @@ public class KpsKimlikBilgisiDTO {
 		this.verildigiIlce = verildigiIlce;
 	}
 
-	public KpsTcKisiKayitYeriBilgisiDTO getKayitYeriBilgisi() {
-		return kayitYeriBilgisi;
+	public KpsTcKisiKayitYeriBilgisiDTO getKayitYeriBilgisiDTO() {
+		return kayitYeriBilgisiDTO;
 	}
 
-	public void setKayitYeriBilgisi(KpsTcKisiKayitYeriBilgisiDTO kayitYeriBilgisi) {
-		this.kayitYeriBilgisi = kayitYeriBilgisi;
+	public void setKayitYeriBilgisiDTO(KpsTcKisiKayitYeriBilgisiDTO kayitYeriBilgisiDTO) {
+		this.kayitYeriBilgisiDTO = kayitYeriBilgisiDTO;
 	}
 
+	public KpsTCKisiDurumBilgisiDTO getDurumBilgisiDTO() {
+		return durumBilgisiDTO;
+	}
+
+	public void setDurumBilgisiDTO(KpsTCKisiDurumBilgisiDTO durumBilgisiDTO) {
+		this.durumBilgisiDTO = durumBilgisiDTO;
+	}
+
+	public KpsYabanciKisiDurumBilgisiDTO getYabanciKisiDurumBilgisiDTO() {
+		return yabanciKisiDurumBilgisiDTO;
+	}
+
+	public void setYabanciKisiDurumBilgisiDTO(KpsYabanciKisiDurumBilgisiDTO yabanciKisiDurumBilgisiDTO) {
+		this.yabanciKisiDurumBilgisiDTO = yabanciKisiDurumBilgisiDTO;
+	}
+
+	public Integer getDogumYerKod() {
+		return dogumYerKod;
+	}
+
+	public void setDogumYerKod(Integer dogumYerKod) {
+		this.dogumYerKod = dogumYerKod;
+	}
+
+	
+	
+	
 }
