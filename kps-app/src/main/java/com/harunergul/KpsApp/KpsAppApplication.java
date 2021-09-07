@@ -6,10 +6,13 @@ import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 
+import com.harunergul.KpsApp.dto.KpsMaviKartliKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTCKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTcKisiKayitYeriBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsYabanciKisiDurumBilgisiDTO;
 
+import tr.gov.nvi.kps._2011._01._01.MaviKartKisiDurumBilgisi;
+import tr.gov.nvi.kps._2011._01._01.MaviKartKisiTemelBilgisi;
 import tr.gov.nvi.kps._2011._01._01.Parametre;
 import tr.gov.nvi.kps._2011._01._01.TCKisiDurumBilgisi;
 import tr.gov.nvi.kps._2011._01._01.TCKisiKayitYeriBilgisi;
@@ -23,6 +26,7 @@ import tr.gov.nvi.kps._2021._04._01.BilesikKutukBilgileri;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukBilgileriSonucu;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoServis;
 import tr.gov.nvi.kps._2021._04._01.BilesikKutukSorgulaKimlikNoSorguKriteri;
+import tr.gov.nvi.kps._2021._04._01.MaviKartKisiBilgisi;
 import tr.gov.nvi.kps._2021._04._01.MaviKartKisiKutukleri;
 import tr.gov.nvi.kps._2021._04._01.TCCuzdanBilgisi;
 import tr.gov.nvi.kps._2021._04._01.TCKK;
@@ -50,6 +54,8 @@ public class KpsAppApplication {
 //		kpsEndPointURI = "http://kpsv2test.nvi.gov.tr/Services/RoutingService.svc";
 		item.setTokenServiceEndpoint(stsEndPointURI);
 
+ 
+		// person = TestPersonProvider.getTCUyrukluKapali(0);
 
 		KpsKimlikBilgisiDTO kimlik = new KpsKimlikBilgisiDTO();
 
@@ -63,8 +69,8 @@ public class KpsAppApplication {
 		} else {
 			ArrayOfBilesikKutukBilgileri arrayOfkutukBilgileri = sonuc.getSorguSonucu().getValue();
 			List<BilesikKutukBilgileri> bilesikKutukBilgileri = arrayOfkutukBilgileri.getBilesikKutukBilgileri();
-			for (BilesikKutukBilgileri bilesikKutukBilgileri2 : bilesikKutukBilgileri) {
-				hataBilgisi = bilesikKutukBilgileri2.getHataBilgisi().getValue();
+			for (BilesikKutukBilgileri bkBilgisi : bilesikKutukBilgileri) {
+				hataBilgisi = bkBilgisi.getHataBilgisi().getValue();
 				if (hataBilgisi != null) {
 					Integer kod = hataBilgisi.getKod().getValue();
 					String aciklama = hataBilgisi.getAciklama().getValue();
@@ -72,14 +78,20 @@ public class KpsAppApplication {
 					System.out.println("Hata Aciklama : " + aciklama);
 				}
 
-				TCVatandasiKisiKutukleri tcVatandasiKisiKutukleri = bilesikKutukBilgileri2.getTCVatandasiKisiKutukleri()
+				TCVatandasiKisiKutukleri tcVatandasiKisiKutukleri = bkBilgisi.getTCVatandasiKisiKutukleri()
 						.getValue();
+				TCCuzdanBilgisi ncBilgisi = tcVatandasiKisiKutukleri.getNufusCuzdaniBilgisi().getValue();
 
 				TCKK tckkBilgisi = tcVatandasiKisiKutukleri.getTCKKBilgisi().getValue();
+				
+				
+				MaviKartKisiKutukleri maviKartliKisiKutukleri = bkBilgisi.getMaviKartliKisiKutukleri()
+						.getValue();
+				YabanciKisiKutukleri yabanciKisiKutukleri = bkBilgisi.getYabanciKisiKutukleri().getValue();
+				YabanciKisiBilgisi yabanciKisiBilgisi = yabanciKisiKutukleri.getKisiBilgisi().getValue();
+				YabanciKisiTemelBilgisi yabanciKisiTemelBilgisi = yabanciKisiBilgisi.getTemelBilgisi().getValue();
+				
 				if (tckkBilgisi.getAd().getValue() != null) {
-
-					TCCuzdanBilgisi ncBilgisi = tcVatandasiKisiKutukleri.getNufusCuzdaniBilgisi().getValue();
-
 					if (ncBilgisi != null) {
 						kimlik.setCuzdanKayitNo(ncBilgisi.getCuzdanKayitNo().getValue());
 						kimlik.setDogumYeri(ncBilgisi.getDogumYer().getValue());
@@ -88,10 +100,6 @@ public class KpsAppApplication {
 						kimlik.setVerildigiIlce(getParameter(ncBilgisi.getVerildigiIlce().getValue()));
 						kimlik.setCuzdanVerilmeNeden(getParameter(ncBilgisi.getCuzdanVerilmeNeden().getValue()));
 					}
-					
-					
-					
-					
 					kimlik.setKimlikTipi(KimlikTipi.TC_UYRUKLU);
 					kimlik.setTcKimlikNo(tckkBilgisi.getTCKimlikNo().getValue());
 					kimlik.setAd(tckkBilgisi.getAd().getValue());
@@ -108,14 +116,21 @@ public class KpsAppApplication {
 					kimlik.setVerenMakam(tckkBilgisi.getVerenMakam().getValue());
 
 					fillTemelBilgisi(kimlik, tcVatandasiKisiKutukleri.getKisiBilgisi().getValue());
-				}
-
-				MaviKartKisiKutukleri maviKartliKisiKutukleri = bilesikKutukBilgileri2.getMaviKartliKisiKutukleri()
-						.getValue();
-				YabanciKisiKutukleri yabanciKisiKutukleri = bilesikKutukBilgileri2.getYabanciKisiKutukleri().getValue();
-				YabanciKisiBilgisi yabanciKisiBilgisi = yabanciKisiKutukleri.getKisiBilgisi().getValue();
-				YabanciKisiTemelBilgisi yabanciKisiTemelBilgisi = yabanciKisiBilgisi.getTemelBilgisi().getValue();
-				if (yabanciKisiTemelBilgisi != null && yabanciKisiTemelBilgisi.getAd().getValue() != null) {
+				}else if(ncBilgisi!=null && ncBilgisi.getAd()!=null) {
+					
+					kimlik.setKimlikTipi(KimlikTipi.TC_UYRUKLU);
+					kimlik.setTcKimlikNo(ncBilgisi.getTCKimlikNo().getValue());
+					kimlik.setCuzdanKayitNo(ncBilgisi.getCuzdanKayitNo().getValue());
+					kimlik.setDogumYeri(ncBilgisi.getDogumYer().getValue());
+					kimlik.setCuzdanNo(ncBilgisi.getNo().getValue());
+					kimlik.setCuzdanSeriNo(ncBilgisi.getSeri().getValue());
+					kimlik.setVerildigiIlce(getParameter(ncBilgisi.getVerildigiIlce().getValue()));
+					kimlik.setCuzdanVerilmeNeden(getParameter(ncBilgisi.getCuzdanVerilmeNeden().getValue()));
+					
+					tcVatandasiKisiKutukleri.getKisiBilgisi();
+					fillTemelBilgisi(kimlik, tcVatandasiKisiKutukleri.getKisiBilgisi().getValue());
+					
+				}else if (yabanciKisiTemelBilgisi != null && yabanciKisiTemelBilgisi.getAd().getValue() != null) {
 					kimlik.setKimlikTipi(KimlikTipi.YABANCI_UYRUKLU);
 					kimlik.setTcKimlikNo(yabanciKisiBilgisi.getKimlikNo().getValue());
 					kimlik.setAd(yabanciKisiTemelBilgisi.getAd().getValue());
@@ -135,6 +150,34 @@ public class KpsAppApplication {
 					kimlik.setYabanciKisiDurumBilgisiDTO(durumBilgisiDTO);
 					
 
+				}else {
+					
+					MaviKartKisiBilgisi kisiBilgisi = maviKartliKisiKutukleri.getKisiBilgisi().getValue();
+					kimlik.setKimlikTipi(KimlikTipi.MAVI_KARTLI);
+					MaviKartKisiTemelBilgisi temelBilgisi =  kisiBilgisi.getTemelBilgisi().getValue();
+					if (temelBilgisi != null) {
+						kimlik.setAd(temelBilgisi.getAd().getValue());
+						kimlik.setAnneAd(temelBilgisi.getAnneAd().getValue());
+						kimlik.setBabaAd(temelBilgisi.getBabaAd().getValue());
+						kimlik.setSoyad(temelBilgisi.getSoyad().getValue());
+						kimlik.setCinsiyet(getParameter(temelBilgisi.getCinsiyet().getValue()));
+						kimlik.setDogumTarihi(getDate(temelBilgisi.getDogumTarih().getValue()));
+						kimlik.setDogumYeri(temelBilgisi.getDogumYer().getValue());
+					}
+					
+					MaviKartKisiDurumBilgisi durumBilgisi = kisiBilgisi.getDurumBilgisi().getValue();
+					if(durumBilgisi!=null) {
+						KpsMaviKartliKisiDurumBilgisiDTO dto = new KpsMaviKartliKisiDurumBilgisiDTO();
+						dto.setDurum(getParameter(durumBilgisi.getDurum().getValue()));
+						dto.setMedeniHal(getParameter(durumBilgisi.getMedeniHal().getValue()));
+						dto.setOlumTarihi(getDate(durumBilgisi.getOlumTarih().getValue()));
+						kimlik.setMaviKartliKisiDurumBilgisiDTO(dto);
+					}
+					
+					//kisiBilgisi.getUlke().getValue();
+					
+					
+					
 				}
 			}
 		}

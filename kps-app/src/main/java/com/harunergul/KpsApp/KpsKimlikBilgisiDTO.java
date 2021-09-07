@@ -2,6 +2,7 @@ package com.harunergul.KpsApp;
 
 import java.util.Date;
 
+import com.harunergul.KpsApp.dto.KpsMaviKartliKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTCKisiDurumBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsTcKisiKayitYeriBilgisiDTO;
 import com.harunergul.KpsApp.dto.KpsYabanciKisiDurumBilgisiDTO;
@@ -30,14 +31,22 @@ public class KpsKimlikBilgisiDTO {
 	private Integer cuzdanNo;
 	private String cuzdanSeriNo;
 	private Parameter verildigiIlce;
-	
-	private Integer dogumYerKod; //Hangi ulke oldugunu belirtir.
+
+	private Integer dogumYerKod; // Hangi ulke oldugunu belirtir.
 	private KpsTcKisiKayitYeriBilgisiDTO kayitYeriBilgisiDTO;
-	private KpsTCKisiDurumBilgisiDTO durumBilgisiDTO; //tc vatandasi icin
+	private KpsTCKisiDurumBilgisiDTO durumBilgisiDTO; // tc vatandasi icin
 	private KpsYabanciKisiDurumBilgisiDTO yabanciKisiDurumBilgisiDTO;
-	
+	private KpsMaviKartliKisiDurumBilgisiDTO maviKartliKisiDurumBilgisiDTO;
 
 	private Parameter uyruk;
+
+	public KimlikTipi getKimlikTipi() {
+		return kimlikTipi;
+	}
+
+	public void setKimlikTipi(KimlikTipi kimlikTipi) {
+		this.kimlikTipi = kimlikTipi;
+	}
 
 	public Long getTcKimlikNo() {
 		return tcKimlikNo;
@@ -95,6 +104,14 @@ public class KpsKimlikBilgisiDTO {
 		this.dogumTarihi = dogumTarihi;
 	}
 
+	public String getDogumYeri() {
+		return dogumYeri;
+	}
+
+	public void setDogumYeri(String dogumYeri) {
+		this.dogumYeri = dogumYeri;
+	}
+
 	public Parameter getKanGurubu() {
 		return kanGurubu;
 	}
@@ -143,36 +160,12 @@ public class KpsKimlikBilgisiDTO {
 		this.verenMakam = verenMakam;
 	}
 
-	public KimlikTipi getKimlikTipi() {
-		return kimlikTipi;
-	}
-
-	public void setKimlikTipi(KimlikTipi kimlikTipi) {
-		this.kimlikTipi = kimlikTipi;
-	}
-
-	public Parameter getUyruk() {
-		return uyruk;
-	}
-
-	public void setUyruk(Parameter uyruk) {
-		this.uyruk = uyruk;
-	}
-
 	public Parameter getMedeniHal() {
 		return medeniHal;
 	}
 
 	public void setMedeniHal(Parameter medeniHal) {
 		this.medeniHal = medeniHal;
-	}
-
-	public String getDogumYeri() {
-		return dogumYeri;
-	}
-
-	public void setDogumYeri(String dogumYeri) {
-		this.dogumYeri = dogumYeri;
 	}
 
 	public Long getCuzdanKayitNo() {
@@ -215,6 +208,14 @@ public class KpsKimlikBilgisiDTO {
 		this.verildigiIlce = verildigiIlce;
 	}
 
+	public Integer getDogumYerKod() {
+		return dogumYerKod;
+	}
+
+	public void setDogumYerKod(Integer dogumYerKod) {
+		this.dogumYerKod = dogumYerKod;
+	}
+
 	public KpsTcKisiKayitYeriBilgisiDTO getKayitYeriBilgisiDTO() {
 		return kayitYeriBilgisiDTO;
 	}
@@ -239,15 +240,20 @@ public class KpsKimlikBilgisiDTO {
 		this.yabanciKisiDurumBilgisiDTO = yabanciKisiDurumBilgisiDTO;
 	}
 
-	public Integer getDogumYerKod() {
-		return dogumYerKod;
+	public KpsMaviKartliKisiDurumBilgisiDTO getMaviKartliKisiDurumBilgisiDTO() {
+		return maviKartliKisiDurumBilgisiDTO;
 	}
 
-	public void setDogumYerKod(Integer dogumYerKod) {
-		this.dogumYerKod = dogumYerKod;
+	public void setMaviKartliKisiDurumBilgisiDTO(KpsMaviKartliKisiDurumBilgisiDTO maviKartliKisiDurumBilgisiDTO) {
+		this.maviKartliKisiDurumBilgisiDTO = maviKartliKisiDurumBilgisiDTO;
 	}
 
-	
-	
-	
+	public Parameter getUyruk() {
+		return uyruk;
+	}
+
+	public void setUyruk(Parameter uyruk) {
+		this.uyruk = uyruk;
+	}
+
 }
